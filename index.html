@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevForge - Project Planner</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+<header class="navbar">
+
+    <div class="navbar-left">
+
+        <div class="browser-navigation">
+
+            <button
+                class="nav-arrow"
+                onclick="goBack()"
+                title="Go Back">
+                ←
+            </button>
+
+            <button
+                class="nav-arrow"
+                onclick="goForward()"
+                title="Go Forward">
+                →
+            </button>
+
+        </div>
+
+        <div class="logo" onclick="showPage('home')">
+    DevForge
+</div>
+
+    </div>
+
+
+    <div class="nav-buttons" id="navButtons">
+
+        <button
+            class="btn-outline"
+            onclick="showPage('login')">
+            Login
+        </button>
+
+        <button
+            class="btn-primary"
+            onclick="showPage('signup')">
+            Sign Up
+        </button>
+
+    </div>
+
+</header>
+
+    <!-- HOME -->
+    <main id="homePage" class="page">
+        <div class="app-layout">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+            DevForge
+        </div>
+
+        <div class="sidebar-menu">
+
+            <button onclick="showPage('home')">
+                <span>⌂</span>
+                Home
+            </button>
+
+            <button onclick="showPage('dashboard')">
+                <span>▦</span>
+                Dashboard
+            </button>
+
+            <button onclick="showPage('projects')">
+                <span>▣</span>
+                Projects
+            </button>
+
+            <button onclick="showPage('create')">
+                <span>＋</span>
+                New Project
+            </button>
+
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <button>
+                <span>⚙</span>
+                Settings
+            </button>
+
+            <button onclick="logout()">
+                <span>↪</span>
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+    <div class="dashboard-content">
+
+        <section class="hero">
+
+            <div class="badge">
+                JavaScript Project Planner
+            </div>
+
+            <h1>
+                Turn Your Ideas Into
+                <span>Real Projects.</span>
+            </h1>
+
+            <p>
+                Describe your software idea and DevForge helps you
+                organize the frontend, backend, database and features
+                of your project.
+            </p>
+
+            <div class="hero-buttons">
+                <button class="btn-primary large"
+                        onclick="showPage('create')">
+                    Start Building
+                </button>
+
+                <button class="btn-outline large"
+                        onclick="showPage('projects')">
+                    View Projects
+                </button>
+            </div>
+
+        </section>
+
+
+        <!-- CREATE PROMPT -->
+        <section class="prompt-section">
+
+            <div class="prompt-card">
+
+                <h2>Describe Your Project</h2>
+
+                <p>
+                    Tell us what you want to build.
+                </p>
+
+                <textarea
+                    id="homeProjectInput"
+                    placeholder="Example: Build a college marketplace where students can buy and sell products..."
+                ></textarea>
+
+                <button class="btn-primary"
+                        onclick="createFromHome()">
+                    Generate Project
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- FEATURES -->
+        <section class="features">
+
+            <h2>Everything You Need</h2>
+
+            <p class="section-subtitle">
+                Plan your software project in one place.
+            </p>
+
+            <div class="feature-grid">
+
+                <div class="feature-card">
+                    <div class="feature-icon">AI</div>
+                    <h3>Project Planning</h3>
+                    <p>
+                        Organize your software idea into a structured
+                        project plan.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">UI</div>
+                    <h3>Frontend</h3>
+                    <p>
+                        Define the pages and user interface required
+                        for your application.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">API</div>
+                    <h3>Backend</h3>
+                    <p>
+                        Plan the backend functionality and APIs
+                        required by your project.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">DB</div>
+                    <h3>Database</h3>
+                    <p>
+                        Organize the data and database requirements
+                        of your application.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+</main>
+
+
+    <!-- LOGIN -->
+    <section id="loginPage" class="page hidden">
+
+        <div class="auth-container">
+
+            <div class="auth-card">
+
+                <h2>Welcome Back</h2>
+
+                <p>Login to continue to DevForge.</p>
+
+                <form id="loginForm">
+
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required>
+
+                    <div id="loginMessage" class="message"></div>
+
+                    <button class="btn-primary full">
+                        Login
+                    </button>
+
+                </form>
+
+                <p class="auth-switch">
+                    Don't have an account?
+                    <a href="#" onclick="showPage('signup')">
+                        Sign Up
+                    </a>
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SIGNUP -->
+    <section id="signupPage" class="page hidden">
+
+        <div class="auth-container">
+
+            <div class="auth-card">
+
+                <h2>Create Account</h2>
+
+                <p>Start planning your projects.</p>
+
+                <form id="signupForm">
+
+                    <label>Name</label>
+                    <input type="text" id="signupName" required>
+
+                    <label>Email</label>
+                    <input type="email" id="signupEmail" required>
+
+                    <label>Password</label>
+                    <input type="password" id="signupPassword" required>
+
+                    <div id="signupMessage" class="message"></div>
+
+                    <button class="btn-primary full">
+                        Create Account
+                    </button>
+
+                </form>
+
+                <p class="auth-switch">
+                    Already have an account?
+                    <a href="#" onclick="showPage('login')">
+                        Login
+                    </a>
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- DASHBOARD -->
+    <section id="dashboardPage" class="page hidden">
+        <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+            DevForge
+        </div>
+
+        <div class="sidebar-menu">
+
+            <button onclick="showPage('home')">
+                <span>⌂</span>
+                Home
+            </button>
+
+            <button onclick="showPage('dashboard')">
+                <span>▦</span>
+                Dashboard
+            </button>
+
+            <button onclick="showPage('projects')">
+                <span>▣</span>
+                Projects
+            </button>
+
+            <button onclick="showPage('create')">
+                <span>＋</span>
+                New Project
+            </button>
+
+        </div>
+
+       <div class="sidebar-bottom">
+
+    <button>
+        <span>⚙</span>
+        Settings
+    </button>
+
+    <button
+        id="sidebarLogout"
+        onclick="logout()">
+        <span>↪</span>
+        Logout
+    </button>
+
+    </div>
+    </aside>
+
+    <!-- DASHBOARD CONTENT -->
+    <div class="dashboard-content">
+        <div class="dashboard">
+
+            <div class="dashboard-header">
+                <div>
+                    <p class="small-text">Welcome back</p>
+                    <h1 id="dashboardName">Developer</h1>
+                </div>
+
+                <button class="btn-primary"
+                        onclick="showPage('create')">
+                    + New Project
+                </button>
+            </div>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <span>Total Projects</span>
+                    <strong id="totalProjects">0</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Frontend Plans</span>
+                    <strong id="frontendCount">0</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Backend Plans</span>
+                    <strong id="backendCount">0</strong>
+                </div>
+
+            </div>
+
+            <div class="dashboard-section">
+
+                <h2>Recent Projects</h2>
+
+                <div id="recentProjects" class="project-grid"></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CREATE PROJECT -->
+    <section id="createPage" class="page hidden">
+        <div class="app-layout">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+            DevForge
+        </div>
+
+        <div class="sidebar-menu">
+
+            <button onclick="showPage('home')">
+                <span>⌂</span>
+                Home
+            </button>
+
+            <button onclick="showPage('dashboard')">
+                <span>▦</span>
+                Dashboard
+            </button>
+
+            <button onclick="showPage('projects')">
+                <span>▣</span>
+                Projects
+            </button>
+
+            <button onclick="showPage('create')">
+                <span>＋</span>
+                New Project
+            </button>
+
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <button>
+                <span>⚙</span>
+                Settings
+            </button>
+
+            <button onclick="logout()">
+                <span>↪</span>
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+    <div class="dashboard-content">
+
+        <div class="create-container">
+
+            <div class="create-header">
+                <p class="small-text">Project Builder</p>
+                <h1>Create Your Project</h1>
+                <p>
+                    Describe your idea and DevForge will create
+                    a structured project plan.
+                </p>
+            </div>
+
+            <form id="projectForm" class="project-form">
+
+                <label>Project Name</label>
+
+                <input
+                    type="text"
+                    id="projectName"
+                    placeholder="e.g. Campus Marketplace"
+                    required
+                >
+
+                <label>Project Description</label>
+
+                <textarea
+                    id="projectDescription"
+                    placeholder="Describe what your application should do..."
+                    required
+                ></textarea>
+
+                <label>Project Type</label>
+
+                <select id="projectType">
+                    <option value="Web Application">
+                        Web Application
+                    </option>
+
+                    <option value="Mobile Application">
+                        Mobile Application
+                    </option>
+
+                    <option value="AI Application">
+                        AI Application
+                    </option>
+
+                    <option value="E-Commerce">
+                        E-Commerce
+                    </option>
+                </select>
+
+                <div id="projectMessage" class="message"></div>
+
+                <button class="btn-primary large">
+                    Generate Project Plan
+                </button>
+
+            </form>
+
+         </div>
+
+</div>
+
+</section>
+
+
+    <!-- PROJECTS -->
+    <section id="projectsPage" class="page hidden">
+        <div class="app-layout">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+            DevForge
+        </div>
+
+        <div class="sidebar-menu">
+
+            <button onclick="showPage('home')">
+                <span>⌂</span>
+                Home
+            </button>
+
+            <button onclick="showPage('dashboard')">
+                <span>▦</span>
+                Dashboard
+            </button>
+
+            <button onclick="showPage('projects')">
+                <span>▣</span>
+                Projects
+            </button>
+
+            <button onclick="showPage('create')">
+                <span>＋</span>
+                New Project
+            </button>
+
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <button>
+                <span>⚙</span>
+                Settings
+            </button>
+
+            <button onclick="logout()">
+                <span>↪</span>
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+    <div class="dashboard-content">
+
+        <div class="projects-container">
+
+            <div class="dashboard-header">
+
+                <div>
+                    <p class="small-text">Your Workspace</p>
+                    <h1>My Projects</h1>
+                </div>
+
+                <button class="btn-primary"
+                        onclick="showPage('create')">
+                    + New Project
+                </button>
+
+            </div>
+
+            <div id="allProjects" class="project-grid"></div>
+
+        </div>
+
+</div>
+
+</section>
+
+    <!-- PROJECT DETAILS -->
+    <section id="detailsPage" class="page hidden">
+
+        <div class="details-container">
+
+            <button class="back-button"
+                    onclick="showPage('projects')">
+                ← Back to Projects
+            </button>
+
+            <div id="projectDetails"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <div class="footer-logo">
+            DevForge
+        </div>
+
+        <p>
+            JavaScript Project Planner
+        </p>
+
+        <p class="copyright">
+            © 2026 DevForge
+        </p>
+
+    </footer>
+
+
+    <script src="js/script.js"></script>
+
+</body>
+</html>
