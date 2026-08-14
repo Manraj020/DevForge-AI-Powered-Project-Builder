@@ -19,7 +19,6 @@ let currentUser =
     if (!currentUser) {
         return [];
     }
-
     return projects.filter(function(project) {
         return project.owner === currentUser.email;
     });
@@ -29,7 +28,6 @@ function goBack() {
     if (historyIndex <= 0) {
         return;
     }
-
     historyIndex--;
 
     const previousPage =
@@ -43,8 +41,6 @@ function goBack() {
 
     updateNavigationButtons();
 }
-
-
 function goForward() {
 
     if (historyIndex >= pageHistory.length - 1) {
@@ -89,97 +85,174 @@ function updateNavigationButtons() {
     }
 }
 /* PAGE NAVIGATION */
+function showLogoutConfirmation() {
+
+    const modal =
+        document.getElementById("logoutModal");
+
+    if (modal) {
+        modal.classList.add("show");
+    }
+}
+
+function closeLogoutConfirmation() {
+
+    const modal =
+        document.getElementById("logoutModal");
+
+    if (modal) {
+        modal.classList.remove("show");
+    }
+}
+function confirmLogout() {
+
+    closeLogoutConfirmation();
+
+    logout();
+}
+function logout(event) {
+
+    if (event) {
+        event.stopPropagation();
+    }
+    // Remove only the active login session
+    localStorage.removeItem("devforgeCurrentUser");
+
+    // Clear current user from JavaScript memory
+    currentUser = null;
+
+    // Rebuild navbar as logged-out
+    updateNavbar();
+    // Go to Home
+    showPage("home");
+}
+
 function updateNavbar() {
 
     const navButtons =
         document.getElementById("navButtons");
 
+    if (!navButtons) {
+        return;
+    }
+    // =========================
+    // LOGGED-IN USER
+    // =========================
+
     if (currentUser) {
 
         navButtons.innerHTML = `
-    <div class="user-menu">
 
-        <button
-            class="user-button"
-            onclick="toggleUserMenu()">
+            <div class="user-menu">
+                <button
+                    type="button"
+                    class="user-button"
+                    onclick="toggleUserMenu(event)">
 
-            <span class="user-avatar">
-                ${currentUser.name.charAt(0).toUpperCase()}
-            </span>
+                    <span class="user-avatar">
+                        ${currentUser.name.charAt(0).toUpperCase()}
+                    </span>
 
-            <span>
-                ${currentUser.name}
-            </span>
+                    <span>
+                        ${currentUser.name}
+                    </span>
 
-            <span class="user-arrow">
-                ▾
-            </span>
+                    <span class="user-arrow">
+                        ▾
+                    </span>
 
-        </button>
+                </button>
+                <div
+                    class="user-dropdown"
+                    id="userDropdown">
 
+                    <div class="dropdown-user-info">
 
-        <div
-            class="user-dropdown"
-            id="userDropdown">
+                        <strong>
+                            ${currentUser.name}
+                        </strong>
 
-            <div class="dropdown-user-info">
-                <strong>${currentUser.name}</strong>
-                <span>${currentUser.email}</span>
+                        <span>
+                            ${currentUser.email}
+                        </span>
+
+                    </div>
+                    <button
+                        type="button"
+                        onclick="showPage('dashboard')">
+
+                        Dashboard
+
+                    </button>
+                    <button
+                        type="button"
+                        onclick="showPage('projects')">
+
+                        My Projects
+
+                    </button>
+                    <button
+                        type="button">
+
+                        Settings
+
+                    </button>
+                    <div class="dropdown-divider"></div>
+
+                    <button
+                       type="button"
+                       class="logout-option"
+                    onclick="showLogoutConfirmation()">
+
+                         Logout
+
+                    </button>
+
+                </div>
+
             </div>
+        `;
+    }
 
-            <button onclick="showPage('dashboard')">
-                Dashboard
-            </button>
-
-            <button onclick="showPage('projects')">
-                My Projects
-            </button>
-
-            <button>
-                Settings
-            </button>
-
-            <div class="dropdown-divider"></div>
-
-            <button
-                class="logout-option"
-                onclick="logout()">
-                Logout
-            </button>
-
-        </div>
-
-    </div>
-`;
-
-    } else {
-
+    // =========================
+    // LOGGED-OUT USER
+    // =========================
+    else {
         navButtons.innerHTML = `
-
             <button
+                type="button"
                 class="btn-outline"
                 onclick="showPage('login')">
-                Login
-            </button>
 
+                Login
+
+            </button>
             <button
+                type="button"
                 class="btn-primary"
                 onclick="showPage('signup')">
                 Sign Up
             </button>
-
         `;
     }
+    // =========================
+    // SIDEBAR LOGOUT
+    // =========================
+
     const sidebarLogout =
-    document.getElementById("sidebarLogout");
+        document.getElementById("sidebarLogout");
 
     if (sidebarLogout) {
 
-    sidebarLogout.style.display =
-        currentUser ? "flex" : "none";
+        sidebarLogout.style.display =
+            currentUser ? "flex" : "none";
+    }
 }
-}
-function toggleUserMenu() {
+function toggleUserMenu(event) {
+
+    if (event) {
+        event.stopPropagation();
+    }
 
     const dropdown =
         document.getElementById("userDropdown");
@@ -235,14 +308,15 @@ function showPage(page, addToHistory = true) {
     }
 
     // Load page data
+    if (page === "home") {
+    loadHomeProjects();
+}
     if (page === "dashboard") {
         loadDashboard();
     }
-
     if (page === "projects") {
         displayProjects();
     }
-
     updateNavigationButtons();
 }
 /* SIGNUP */
@@ -263,87 +337,53 @@ document.getElementById("signupForm").addEventListener("submit", function(event)
     const message =
         document.getElementById("signupMessage");
 
-
     /* Check if account already exists */
-
     const existingUser = users.find(function(user) {
-
         return user.email.toLowerCase() === email.toLowerCase();
-
     });
-
-
     if (existingUser) {
-
         message.textContent =
             "An account with this email already exists. Please login.";
-
         message.className = "message error";
-
         return;
     }
-
 
     /* Validate password */
-
     if (password.length < 6) {
-
         message.textContent =
             "Password must contain at least 6 characters.";
-
         message.className = "message error";
-
         return;
     }
 
-
     /* Create new account */
-
     const user = {
-
         name: name,
         email: email,
         password: password
-
     };
 
-
     /* Save account permanently */
-
     users.push(user);
-
     localStorage.setItem(
         "devforgeUsers",
         JSON.stringify(users)
     );
 
-
     /* Create login session */
-
     currentUser = user;
-
     localStorage.setItem(
         "devforgeCurrentUser",
         user.email
     );
-
-
     updateNavbar();
-
-
     message.textContent =
         "Account created successfully!";
-
     message.className =
         "message success";
-
-
     setTimeout(function() {
-
         showPage("dashboard");
-
     }, 800);
-
 });
 
 /* LOGIN */
@@ -361,70 +401,45 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
     const message =
         document.getElementById("loginMessage");
 
-
     /* Find account */
-
     const user = users.find(function(user) {
-
         return user.email.toLowerCase() === email.toLowerCase();
-
     });
 
-
     /* Account doesn't exist */
-
     if (!user) {
-
         message.textContent =
             "No account found with this email. Please sign up.";
-
         message.className =
             "message error";
-
         return;
     }
-
 
     /* Wrong password */
-
     if (password !== user.password) {
-
         message.textContent =
             "Incorrect password.";
-
         message.className =
             "message error";
-
         return;
     }
-
-
     /* Login successful */
 
     currentUser = user;
-
     localStorage.setItem(
         "devforgeCurrentUser",
         user.email
     );
-
-
     updateNavbar();
-
-
     message.textContent =
         "Login successful!";
 
     message.className =
         "message success";
-
-
     setTimeout(function() {
-
         showPage("dashboard");
 
     }, 600);
-
 });
 /* CREATE FROM HOME */
 
@@ -445,8 +460,6 @@ function createFromHome() {
 
     showPage("create");
 }
-
-
 /* CREATE PROJECT */
 
 document.getElementById("projectForm").addEventListener("submit", function(event) {
@@ -476,7 +489,6 @@ document.getElementById("projectForm").addEventListener("submit", function(event
         message.className = "message error";
         return;
     }
-
     const project = {
 
         id: Date.now(),
@@ -523,7 +535,6 @@ document.getElementById("projectForm").addEventListener("submit", function(event
         "devforgeProjects",
         JSON.stringify(projects)
     );
-
     message.textContent = "Project generated successfully!";
     message.className = "message success";
 
@@ -534,23 +545,19 @@ document.getElementById("projectForm").addEventListener("submit", function(event
     }, 800);
 
 });
-
-
 /* DISPLAY PROJECTS */
 
-
-
-    function displayProjects() {
+function loadHomeProjects() {
 
     const container =
-        document.getElementById("allProjects");
+        document.getElementById("homeRecentProjects");
 
+    if (!container) {
+        return;
+    }
     container.innerHTML = "";
-
-
-    // ONLY current user's projects
-    const userProjects = getUserProjects();
-
+    const userProjects =
+        getUserProjects();
 
     if (userProjects.length === 0) {
 
@@ -565,10 +572,71 @@ document.getElementById("projectForm").addEventListener("submit", function(event
 
             </div>
         `;
-
         return;
     }
+    userProjects
+        .slice(-3)
+        .reverse()
+        .forEach(function(project) {
 
+            const card =
+                document.createElement("div");
+
+            card.className = "home-project-card";
+            card.innerHTML = `
+
+                <div class="project-type">
+                    ${project.type}
+                </div>
+
+                <h3>
+                    ${project.name}
+                </h3>
+
+                <p>
+                    ${project.description}
+                </p>
+
+                <p>
+                    Created: ${project.createdAt}
+                </p>
+
+                <button
+                    class="btn-primary"
+                    onclick="viewProject(${project.id})">
+
+                    View Project
+
+                </button>
+            `;
+            container.appendChild(card);
+
+        });
+}
+    function displayProjects() {
+
+    const container =
+        document.getElementById("allProjects");
+
+    container.innerHTML = "";
+
+    // ONLY current user's projects
+    const userProjects = getUserProjects();
+
+    if (userProjects.length === 0) {
+        container.innerHTML = `
+            <div class="project-card">
+
+                <h3>No Projects Yet</h3>
+
+                <p>
+                    Create your first project to see it here.
+                </p>
+
+            </div>
+        `;
+        return;
+    }
 
     userProjects.forEach(function(project) {
 
@@ -576,7 +644,6 @@ document.getElementById("projectForm").addEventListener("submit", function(event
             document.createElement("div");
 
         card.className = "project-card";
-
         card.innerHTML = `
             <div class="project-type">
                 ${project.type}
@@ -592,18 +659,95 @@ document.getElementById("projectForm").addEventListener("submit", function(event
                 Created: ${project.createdAt}
             </p>
 
-            <button
-                class="btn-primary"
-                onclick="viewProject(${project.id})">
-                View Project
-            </button>
+          <div class="project-card-actions">
+
+    <button
+        class="btn-primary"
+        onclick="viewProject(${project.id})">
+        View Project
+    </button>
+
+    <button
+        class="delete-project-btn"
+        onclick="showDeleteConfirmation(${project.id})">
+        Delete
+    </button>
+
+</div>
         `;
-
         container.appendChild(card);
-
     });
 }
+let projectToDelete = null;
 
+function showDeleteConfirmation(projectId) {
+
+    projectToDelete = projectId;
+
+    const projects = getUserProjects();
+
+    const project =
+        projects.find(function(p) {
+            return p.id === projectId;
+        });
+
+    const message =
+        document.getElementById("deleteProjectMessage");
+
+    if (project && message) {
+
+        message.textContent =
+            `Are you sure you want to delete "${project.name}"? This action cannot be undone.`;
+    }
+
+    const modal =
+        document.getElementById("deleteModal");
+
+    if (modal) {
+        modal.classList.add("show");
+    }
+}
+function closeDeleteConfirmation() {
+
+    projectToDelete = null;
+
+    const modal =
+        document.getElementById("deleteModal");
+
+    if (modal) {
+        modal.classList.remove("show");
+    }
+}
+function confirmDeleteProject() {
+
+    if (projectToDelete === null) {
+        return;
+    }
+
+    // Remove the project from the main projects array
+    projects = projects.filter(function(project) {
+        return project.id !== projectToDelete;
+    });
+
+    // Save the updated projects array
+    localStorage.setItem(
+        "devforgeProjects",
+        JSON.stringify(projects)
+    );
+
+    // Close the confirmation popup
+    closeDeleteConfirmation();
+
+    // Refresh the projects page
+    displayProjects();
+
+    // Refresh dashboard if needed
+    if (typeof loadDashboard === "function") {
+        loadDashboard();
+    }
+    // Clear selected project
+    projectToDelete = null;
+}
 /* VIEW PROJECT */
 
 function viewProject(id) {
@@ -639,7 +783,6 @@ function viewProject(id) {
 
         </div>
 
-
         <div class="roadmap-grid">
 
             <div class="roadmap-card">
@@ -660,7 +803,6 @@ function viewProject(id) {
 
             </div>
 
-
             <div class="roadmap-card">
 
                 <div class="roadmap-icon">
@@ -679,7 +821,6 @@ function viewProject(id) {
 
             </div>
 
-
             <div class="roadmap-card">
 
                 <div class="roadmap-icon">
@@ -697,7 +838,6 @@ function viewProject(id) {
                 </ul>
 
             </div>
-
 
             <div class="roadmap-card">
 
@@ -721,10 +861,8 @@ function viewProject(id) {
 
     </div>
 `;
-
     showPage("details");
 }
-
 
 /* DASHBOARD */
 function loadDashboard() {
@@ -738,35 +876,28 @@ function loadDashboard() {
         nameElement.textContent = "Guest";
     }
 
-
     // Get ONLY the current user's projects
     const userProjects = getUserProjects();
-
 
     // Total projects
     document.getElementById("totalProjects").textContent =
         userProjects.length;
 
-
     // Frontend plans
     document.getElementById("frontendCount").textContent =
         userProjects.length;
-
 
     // Backend plans
     document.getElementById("backendCount").textContent =
         userProjects.length;
 
-
-    // Recent projects
+        // Recent projects
     const recent =
         document.getElementById("recentProjects");
 
     recent.innerHTML = "";
 
-
     if (userProjects.length === 0) {
-
         recent.innerHTML = `
             <div class="project-card">
                 <h3>No Projects Yet</h3>
@@ -776,11 +907,8 @@ function loadDashboard() {
                 </p>
             </div>
         `;
-
         return;
     }
-
-
     userProjects
         .slice(-3)
         .reverse()
@@ -808,11 +936,8 @@ function loadDashboard() {
             `;
 
             recent.appendChild(card);
-
         });
 }
-
-
 /* INITIAL PAGE */
 
 updateNavbar();
