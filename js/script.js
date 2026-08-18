@@ -1,6 +1,7 @@
 let pageHistory = [];
 let historyIndex = -1;
 let isNavigating = false;
+let currentProjectId = null;
 let projects =
     JSON.parse(localStorage.getItem("devforgeProjects")) || [];
    
@@ -751,6 +752,7 @@ function confirmDeleteProject() {
 /* VIEW PROJECT */
 
 function viewProject(id) {
+    currentProjectId = id;
 
     const project =
         projects.find(function(item) {
@@ -862,6 +864,171 @@ function viewProject(id) {
     </div>
 `;
     showPage("details");
+}
+/* HTML PAGE GENERATOR */
+
+function generateHTMLPage() {
+
+    const project =
+        projects.find(function(item) {
+            return item.id === currentProjectId;
+        });
+
+    if (!project) {
+        alert("Please open a project first.");
+        return;
+    }
+
+    const generatedHTML = `
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>${project.name}</title>
+
+</head>
+
+<body>
+
+    <nav>
+
+        <h2>${project.name}</h2>
+
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="#contact">Contact</a>
+
+    </nav>
+
+
+    <section id="home">
+
+        <h1>
+            Welcome to ${project.name}
+        </h1>
+
+        <p>
+            ${project.description}
+        </p>
+
+        <button>
+            Get Started
+        </button>
+
+    </section>
+
+
+    <section id="features">
+
+        <h2>Features</h2>
+
+        <ul>
+
+            ${project.features
+                .map(function(feature) {
+                    return `<li>${feature}</li>`;
+                })
+                .join("")}
+
+        </ul>
+
+    </section>
+
+
+    <section id="contact">
+
+        <h2>Contact</h2>
+
+        <p>
+            Thank you for visiting ${project.name}.
+        </p>
+
+    </section>
+
+
+</body>
+
+</html>
+`;
+
+   const preview =
+    document.getElementById("generatedPagePreview");
+
+const frame =
+    document.getElementById("generatedPreviewFrame");
+
+const code =
+    document.getElementById("generatedHTMLCode");
+
+if (preview && frame) {
+
+    frame.srcdoc = generatedHTML;
+
+    preview.classList.remove("hidden");
+}
+
+if (code) {
+
+    code.textContent = generatedHTML;
+}
+}
+function toggleHTMLCode() {
+
+    const codeSection =
+        document.getElementById("generatedCodeSection");
+
+    if (!codeSection) {
+        return;
+    }
+
+    codeSection.classList.toggle("hidden");
+}
+function copyGeneratedHTML() {
+
+    const code =
+        document.getElementById("generatedHTMLCode");
+
+    if (!code) {
+        return;
+    }
+
+    navigator.clipboard.writeText(code.textContent);
+
+    alert("HTML code copied successfully!");
+}
+function downloadGeneratedHTML() {
+
+    const code =
+        document.getElementById("generatedHTMLCode");
+
+    if (!code) {
+        return;
+    }
+
+    const blob =
+        new Blob(
+            [code.textContent],
+            { type: "text/html" }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const link =
+        document.createElement("a");
+
+    link.href = url;
+    link.download = "devforge-generated-page.html";
+
+    link.click();
+
+    URL.revokeObjectURL(url);
 }
 
 /* DASHBOARD */

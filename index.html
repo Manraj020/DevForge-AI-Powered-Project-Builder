@@ -656,6 +656,73 @@
             </button>
 
             <div id="projectDetails"></div>
+            <div class="generate-page-action">
+
+            <button
+        class="btn-primary"
+        onclick="generateHTMLPage()">
+
+        Generate HTML Page
+
+    </button>
+
+</div>
+<div id="generatedPagePreview" class="generated-page-preview hidden">
+
+    <div class="preview-header">
+
+        <div>
+            <p class="small-text">GENERATED OUTPUT</p>
+            <h2>Generated Webpage</h2>
+        </div>
+
+        <button
+            class="btn-outline"
+            onclick="toggleHTMLCode()">
+            View Code
+        </button>
+
+    </div>
+
+
+    <iframe
+        id="generatedPreviewFrame"
+        title="Generated HTML Preview">
+    </iframe>
+
+
+    <div
+        id="generatedCodeSection"
+        class="generated-code-section hidden">
+
+        <div class="code-header">
+
+            <h3>HTML Source Code</h3>
+
+            <div class="code-actions">
+
+                <button
+                    class="btn-outline"
+                    onclick="copyGeneratedHTML()">
+                    Copy Code
+                </button>
+
+                <button
+                    class="btn-primary"
+                    onclick="downloadGeneratedHTML()">
+                    Download HTML
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <pre><code id="generatedHTMLCode"></code></pre>
+
+    </div>
+
+</div>
 
         </div>
 
